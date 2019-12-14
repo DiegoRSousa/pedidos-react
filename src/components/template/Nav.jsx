@@ -8,9 +8,10 @@ export default porps =>
                 <i className="fa fa-home"></i> Home &nbsp;
             </Link>
             <Link to="/categorias">
-                <i className="fa fa-angle-double-right"></i> Categorias
+                <i className="fa fa-angle-double-right"></i> Categorias &nbsp;
             </Link>
-            
-            {/* <a href="#"><i className="fa fa-layer-boxes"></i> Produtos</a> */}
+            <Link to="produtos">
+                <i className="fa fa-angle-double-right"></i> Produtos &nbsp;
+            </Link>
         </nav>
     </aside>

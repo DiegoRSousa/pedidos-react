@@ -45,11 +45,8 @@ export default class Categoria extends Component{
     save() {
         const categoria = this.state.categoria;
         const method = categoria.id ? 'put' : 'post';
-        const url = categoria.id ? `${baseUrl}/${categoria.id}` : baseUrl;
-        console.log(method);
-        console.log(url);
 
-        axios[method](url, categoria).then(resp => {
+        axios[method](baseUrl, categoria).then(resp => {
             this.refresh();
         });
     }
@@ -80,6 +77,7 @@ export default class Categoria extends Component{
         this.setState({categoria})
     }
 
+
     load(categoria) {
         this.setState({categoria})
     }
@@ -102,7 +100,7 @@ export default class Categoria extends Component{
                     <CategoriaList
                         list = {this.state.list} 
                         load = {this.load}
-                        remove = {this.remove}/>
+                        remove = {this.remove} />
             </Main>
         )
         

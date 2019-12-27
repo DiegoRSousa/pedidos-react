@@ -26,7 +26,7 @@ export default props => {
 
     return (
          <div>
-            <table className="table mt-2">
+            <table className="table mt-4">
                 <thead>
                     <tr>
                         <th>Id</th>

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-
+import api from '../../services/Api';
 import CategoriaForm from './CategoriaForm';
 import CategoriaList from './CategoriaList';
-import CategoriaSearch from './CategoriaSearch';
+import Search from '../search/Search';
 import Main from '../template/Main';
 
 const headerProps = {
@@ -11,7 +10,6 @@ const headerProps = {
     title: 'Categorias',
     subtitle: 'Crud de categorias'
 }
-const baseUrl = "http://localhost:8080/categorias";
 
 const initialState = {
     categoria: {id: 0, descricao: ''},
@@ -31,37 +29,40 @@ export default class Categoria extends Component{
         this.clear = this.clear.bind(this);
         this.load = this.load.bind(this);
         this.search = this.search.bind(this);
-
         this.refresh();
     }
-
+    
     refresh() {
-        axios(baseUrl).then(resp => {
+        api.get("/categorias").then(resp => {
             const list = resp.data;
             this.setState({categoria: initialState.categoria, list})   
+        }).catch(function(error) {
+            if (error.response.status === 403) {
+                console.log('login');
+            }
+            
         });
     }
 
     save() {
         const categoria = this.state.categoria;
         const method = categoria.id ? 'put' : 'post';
-
-        axios[method](baseUrl, categoria).then(resp => {
+        api[method]("categorias", categoria).then(resp => {
             this.refresh();
         });
+        
     }
 
     remove(categoria) {
-        axios.delete(`${baseUrl}/${categoria.id}`).then(resp => {
+        api.delete(`/categorias/${categoria.id}`).then(resp => {
             this.refresh();
-        })
-
+        });
     }
 
     search() {
        const descricao = document.getElementById("search").value;
        if(descricao !== "")
-            axios(`${baseUrl}/search/${descricao}`).then(resp => {
+            api.get(`/categorias/search/${descricao}`).then(resp => {
                 const list = resp.data;
                 this.setState({categoria: initialState.categoria, list})   
             }).catch(function (error) {
@@ -77,7 +78,6 @@ export default class Categoria extends Component{
         this.setState({categoria})
     }
 
-
     load(categoria) {
         this.setState({categoria})
     }
@@ -88,14 +88,13 @@ export default class Categoria extends Component{
 
     render() {
         return (
-            <Main {...headerProps}>
-
+            <Main {...headerProps}>    
                 <CategoriaForm 
                         categoria = {this.state.categoria}
                         update = {this.update}
                         save = {this.save}
                         clear = {this.clear}/>
-                    <CategoriaSearch
+                    <Search
                         search = {this.search} />
                     <CategoriaList
                         list = {this.state.list} 
@@ -103,6 +102,5 @@ export default class Categoria extends Component{
                         remove = {this.remove} />
             </Main>
         )
-        
     }
 }

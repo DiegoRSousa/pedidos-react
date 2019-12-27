@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ProdutoForm from './ProdutoForm';
-import ProdutoSearch from './ProdutoSearch';
 import ProdutoList from './ProdutoList';
+import Search from '../search/Search';
 import Main from '../template/Main';
-import axios from 'axios';
+import api from '../../services/Api';
 
 const headerProps = {
     icon: 'angle-double-right',
@@ -11,10 +11,8 @@ const headerProps = {
     subtitle: 'Crud de produtos'
 }
 
-const baseUrl = "http://localhost:8080/";
-
 const initialState = {
-    produto: {id: 0, codigo: '', descricao: '', preco: '', categoria: {id: 0}},
+    produto: {id: 0, codigo: '', descricao: '', preco: '', categoriaId: 0, categoriaDescricao: ''},
     produtos: [],
     categorias: []
 }
@@ -34,30 +32,27 @@ export default class Produto extends Component {
     }
 
     refresh() {
-        axios(`${baseUrl}produtos`).then(resp => {
+        api.get("produtos").then(resp => {
             const produtos = resp.data; 
             this.setState({produto: initialState.produto, produtos});
         });
-        axios(`${baseUrl}categorias`).then(resp => {
+        api.get("/categorias").then(resp => {
              const categorias = resp.data;
-             this.setState({produto: initialState.produto, categorias});
+             this.setState({categorias});
          });    
     }
 
     update(event) {
         const produto = {...this.state.produto}
-        if(event.target.name === 'categoria') 
-            produto.categoria.id = event.target.value;
-        else
-            produto[event.target.name] = event.target.value
+        produto[event.target.name] = event.target.value
         this.setState({produto})
     }
 
     save() {
-        console.log(this.state.produto);
         const produto = this.state.produto;
         const method = produto.id ? 'put' : 'post';
-        axios[method](`${baseUrl}produtos`, produto).then(resp => {
+        console.log(produto);
+        api[method]("produtos", produto).then(resp => {
              this.refresh();
         });
     }
@@ -65,7 +60,7 @@ export default class Produto extends Component {
     search() {
         const descricao = document.getElementById("search").value;
         if(descricao !== "")
-             axios(`${baseUrl}produtos/search/${descricao}`).then(resp => {
+             api.get(`produtos/search/${descricao}`).then(resp => {
                  const produtos = resp.data;
                  this.setState({produto: initialState.produto, produtos})   
              }).catch(function (error) {
@@ -84,7 +79,7 @@ export default class Produto extends Component {
     }
 
     remove(produto) {
-        axios.delete(`${baseUrl}produtos/${produto.id}`).then(resp => {
+        api.delete(`produtos/${produto.id}`).then(resp => {
             this.refresh();
         })
     }
@@ -99,7 +94,7 @@ export default class Produto extends Component {
                 save = {this.save}
                 clear = {this.clear}
             />
-            <ProdutoSearch search={this.search} />
+            <Search search={this.search} />
             <ProdutoList 
                 list = {this.state.produtos}
                 load = {this.load}

@@ -9,7 +9,7 @@ export default props =>  {
                     <td>{produto.codigo}</td>
                     <td>{produto.descricao}</td>
                     <td>{produto.preco}</td>
-                    <td>{produto.categoria.descricao}</td>
+                    <td>{produto.categoriaDescricao}</td>
                     <td>
                         <button className="btn btn-warning"
                             onClick={() => props.load(produto)}>

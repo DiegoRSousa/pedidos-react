@@ -14,7 +14,8 @@ const headerProps = {
 const initialState = {
     produto: {id: 0, codigo: '', descricao: '', preco: '', categoriaId: 0, categoriaDescricao: ''},
     produtos: [],
-    categorias: []
+    categorias: [],
+    error:''
 }
 
 export default class Produto extends Component {
@@ -27,14 +28,18 @@ export default class Produto extends Component {
         this.search = this.search.bind(this);
         this.remove = this.remove.bind(this);
         this.load = this.load.bind(this);
-    
+        
         this.refresh();
-    }
+    }  
 
     refresh() {
+        this.setState({error: ""});
         api.get("produtos").then(resp => {
             const produtos = resp.data; 
             this.setState({produto: initialState.produto, produtos});
+        }).catch(function(error) {
+            if(error.response.status === 403)
+                return window.location.href = '/';
         });
         api.get("/categorias").then(resp => {
              const categorias = resp.data;
@@ -42,19 +47,24 @@ export default class Produto extends Component {
          });    
     }
 
+    save() {
+        const produto = this.state.produto;
+        const method = produto.id ? 'put' : 'post';
+        if(!produto.codigo || !produto.descricao || !produto.preco || produto.categoriaId === 0)
+            this.setState({error: "Todos os campos são obrigatórios"});
+        else
+            api[method]("produtos", produto).then(resp => {
+                alert("Produto salvo com sucesso");
+                this.refresh();
+            }).catch(function(error) {
+                alert("erro ao salvar produto");
+            });
+    }
+
     update(event) {
         const produto = {...this.state.produto}
         produto[event.target.name] = event.target.value
         this.setState({produto})
-    }
-
-    save() {
-        const produto = this.state.produto;
-        const method = produto.id ? 'put' : 'post';
-        console.log(produto);
-        api[method]("produtos", produto).then(resp => {
-             this.refresh();
-        });
     }
 
     search() {
@@ -80,8 +90,12 @@ export default class Produto extends Component {
 
     remove(produto) {
         api.delete(`produtos/${produto.id}`).then(resp => {
+            alert("Produto removido com sucesso")
             this.refresh();
-        })
+        }).catch(function(error) {
+            if(error.response.status === 403)
+                alert("Não autorizado");
+        });
     }
 
     render() {
@@ -93,6 +107,7 @@ export default class Produto extends Component {
                 update = {this.update}
                 save = {this.save}
                 clear = {this.clear}
+                error = {this.state.error}
             />
             <Search search={this.search} />
             <ProdutoList 

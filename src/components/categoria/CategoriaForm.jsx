@@ -1,6 +1,7 @@
 import React from 'react';
 export default props => 
 <div className="form">
+    <p className="error">{props.error}</p>
     <div className="row">
         <div className="col-12 col-md-6">
             <label>Descrição: </label>

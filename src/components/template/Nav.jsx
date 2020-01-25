@@ -12,6 +12,10 @@ export default porps =>
         <i className="fa fa-angle-double-right"></i> Categorias
     </Link>
     <Link to="produtos">
-        <i className="fa fa-angle-double-right"></i> Produtos</Link>
+        <i className="fa fa-angle-double-right"></i> Produtos
+    </Link>
+    <Link to="logout">
+        <i className="fa fa-angle-double-right"></i> Sair
+    </Link>
     </nav>
 </aside>

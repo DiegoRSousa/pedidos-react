@@ -2,8 +2,7 @@ import './Login.css';
 import React, { Component } from 'react';
 import  api  from '../../services/Api';
 import {login as authLogin}  from '../../services/Auth';
-import { Redirect } from 'react-router';
-const initialState = { usuario: {nome: '', senha: ''}};
+const initialState = { usuario: {nome: '', senha: ''}, error: ''};
 
 export default class Login extends Component {
     constructor(props) {
@@ -20,11 +19,24 @@ export default class Login extends Component {
         usuario[event.target.name] = event.target.value;
         this.setState({usuario});
     }
-    login = async () => {
-        const response = await api.post("/login", this.state.usuario);
-        authLogin(response.headers.authorization);
-        this.props.history.push("/home");
+    login() {
+        const usuario = this.state.usuario;
+        if(!usuario.nome || !usuario.senha)
+            this.setState({error: "Usuário e senha são obrigatórios"});
+        else {
+            api.post("login", usuario).then(resp => {
+                authLogin(resp.headers.authorization);
+                this.props.history.push("/home"); 
+            }).catch(function(e) {
+                if(e.response.status === 401) {
+                    alert('Dados inválidos');
+                }
+                    
+            });
+        }
+        
     }
+    
     clear() {
         this.setState({usuario: initialState.usuario});
     }
@@ -35,6 +47,7 @@ export default class Login extends Component {
                     <div className="card-header">Login</div>
                     <div className="card-body">
                         <div className="col-12">
+                            <p className="error">{this.state.error}</p>
                             <label>Usuario: </label>
                             <input type="text" name="nome" className="form-control" 
                                 value={this.state.usuario.nome}

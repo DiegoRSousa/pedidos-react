@@ -13,17 +13,20 @@ const PrivateRoute = ({component: Component, ...rest}) => (
             isAuthenticated() ? (
                 <Component {...props} />
             ): (
-                <Redirect to={{ pathname: "/", state: { from : props.location}}} />
+                <Redirect to={{ pathname: "/", state: { from : props.location }}} />
             )
         }
         />
 );
 
-export default props =>
-<Switch>
-    <Route exact path='/' component={Login} />
-    <PrivateRoute path='/categorias' component={Categoria} />
-    <PrivateRoute path='/produtos' component={Produto} />
-    <PrivateRoute path='/home' component={Home} />
-    <Redirect from='*' to='/' />
-</Switch>
+const Routes = () => (
+    <Switch>
+        <Route exact path='/' component={Login} />
+        <PrivateRoute path='/categorias' component={Categoria} />
+        <PrivateRoute path='/produtos' component={Produto} />
+        <PrivateRoute path='/home' component={Home} />
+        <PrivateRoute path="/logout" component={Login} />
+    </Switch>
+);
+
+export default Routes;

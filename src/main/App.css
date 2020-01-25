@@ -48,3 +48,7 @@ aside.content {
 footer.footer {
   grid-area: footer;
 }
+
+p.error {
+  color: red;
+}
